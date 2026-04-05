@@ -105,9 +105,10 @@ const ratesDot            = document.getElementById('ratesDot');
 const ratesLabel          = document.getElementById('ratesLabel');
 const refreshBtn          = document.getElementById('refreshBtn');
 const freeTextToggle      = document.getElementById('freeTextToggle');
-const siteToggle          = document.getElementById('siteToggle');
-const siteToggleWrap      = document.getElementById('siteToggleWrap');
-const currentSiteLabel    = document.getElementById('currentSiteLabel');
+const blockedList         = document.getElementById('blockedList');
+const blockedInput        = document.getElementById('blockedInput');
+const blockedAddBtn       = document.getElementById('blockedAddBtn');
+const addCurrentBtn       = document.getElementById('addCurrentBtn');
 
 let activeTabId      = null;
 let currentHostname  = null;
@@ -310,28 +311,53 @@ window.addEventListener('pagehide', () => {
   }
 });
 
-// ── Site exclusion toggle ──────────────────────────────────────────────────
-function updateSiteToggleUI() {
-  if (!currentHostname) {
-    currentSiteLabel.textContent = 'Not a web page';
-    siteToggleWrap.style.opacity = '0.4';
-    siteToggleWrap.style.pointerEvents = 'none';
+// ── Blocked sites manager ─────────────────────────────────────────────────
+function renderBlockedList() {
+  const sites = settings.excludedSites || [];
+  if (sites.length === 0) {
+    blockedList.innerHTML = '<div class="blocked-empty">No blocked sites</div>';
     return;
   }
-  currentSiteLabel.textContent = currentHostname;
-  const excluded = (settings.excludedSites || []);
-  siteToggle.checked = !excluded.includes(currentHostname);
+  blockedList.innerHTML = sites.map(s => `
+    <div class="blocked-row">
+      <span class="blocked-domain">${s}</span>
+      <button class="blocked-remove" data-site="${s}" title="Remove">×</button>
+    </div>
+  `).join('');
+  blockedList.querySelectorAll('.blocked-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.excludedSites = (settings.excludedSites || []).filter(s => s !== btn.dataset.site);
+      renderBlockedList();
+      saveSettings();
+    });
+  });
 }
 
-siteToggle.addEventListener('change', () => {
-  if (!currentHostname) return;
+function addBlockedSite(domain) {
+  const clean = domain.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0];
+  if (!clean) return;
   const excluded = settings.excludedSites || [];
-  if (siteToggle.checked) {
-    settings.excludedSites = excluded.filter(s => s !== currentHostname);
-  } else {
-    if (!excluded.includes(currentHostname)) settings.excludedSites = [...excluded, currentHostname];
+  if (!excluded.includes(clean)) {
+    settings.excludedSites = [...excluded, clean];
+    renderBlockedList();
+    saveSettings();
   }
-  saveSettings();
+}
+
+blockedAddBtn.addEventListener('click', () => {
+  addBlockedSite(blockedInput.value);
+  blockedInput.value = '';
+});
+
+blockedInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    addBlockedSite(blockedInput.value);
+    blockedInput.value = '';
+  }
+});
+
+addCurrentBtn.addEventListener('click', () => {
+  if (currentHostname) addBlockedSite(currentHostname);
 });
 
 // ── Rates status ───────────────────────────────────────────────────────────
@@ -375,7 +401,8 @@ async function init() {
   updateDisplayModeUI();
   updateRatesStatus();
   freeTextToggle.checked = !!settings.convertFreeText;
-  updateSiteToggleUI();
+  renderBlockedList();
+  if (!currentHostname) addCurrentBtn.style.display = 'none';
 }
 
 init();

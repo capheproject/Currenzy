@@ -61,18 +61,17 @@
 
   <div class="divider"></div>
 
-  <!-- Excluded sites -->
+  <!-- Blocked sites -->
   <div class="section" style="padding-top:12px;padding-bottom:14px;">
-    <div class="toggle-row">
-      <div>
-        <div class="section-label" style="margin-bottom:3px;">Convert on this site</div>
-        <div class="toggle-desc" id="currentSiteLabel">—</div>
-      </div>
-      <label class="toggle-switch" id="siteToggleWrap">
-        <input type="checkbox" id="siteToggle" checked>
-        <span class="toggle-thumb"></span>
-      </label>
+    <div class="blocked-header">
+      <div class="section-label" style="margin-bottom:0;">Blocked sites</div>
+      <button class="add-current-btn" id="addCurrentBtn">+ Add this site</button>
     </div>
+    <div class="blocked-input-row">
+      <input type="text" id="blockedInput" class="blocked-input" placeholder="e.g. amazon.com" />
+      <button class="blocked-add-btn" id="blockedAddBtn">Add</button>
+    </div>
+    <div class="blocked-list" id="blockedList"></div>
   </div>
 
   <div class="divider"></div>
@@ -85,6 +84,13 @@
   <div id="groupsContainer"></div>
 
   <div class="divider"></div>
+
+  <!-- Ko-fi -->
+  <div class="kofi-row">
+    <a href="https://ko-fi.com/thoughtfultools" target="_blank" class="kofi-link">
+      <img src="kofi.png" alt="Support me on Ko-fi" class="kofi-img" />
+    </a>
+  </div>
 
   <!-- Footer -->
   <div class="footer">
