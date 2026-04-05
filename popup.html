@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currenzy</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">💱</div>
+    <div class="header-text">
+      <h1>Currenzy</h1>
+      <p>Inline currency conversion</p>
+    </div>
+  </div>
+
+  <!-- Convert-to -->
+  <div class="section" style="padding-top:16px;">
+    <div class="section-label">Convert to</div>
+    <div class="target-select-wrap">
+      <select id="targetSelect"></select>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Display mode -->
+  <div class="section" style="padding-top:12px;padding-bottom:14px;">
+    <div class="section-label">Show on page</div>
+    <div class="segment-control" id="displayModeControl">
+      <button class="segment-btn" data-mode="converted" id="segConverted">
+        <span class="segment-icon">💱</span>
+        Converted
+      </button>
+      <button class="segment-btn" data-mode="original" id="segOriginal">
+        <span class="segment-icon">🏷️</span>
+        Original
+      </button>
+    </div>
+    <div class="segment-desc" id="segDesc"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Written amounts toggle -->
+  <div class="section" style="padding-top:12px;padding-bottom:14px;">
+    <div class="toggle-row">
+      <div>
+        <div class="section-label" style="margin-bottom:3px;">Written amounts</div>
+        <div class="toggle-desc">convert in-page amounts in sentence format</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="freeTextToggle">
+        <span class="toggle-thumb"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Excluded sites -->
+  <div class="section" style="padding-top:12px;padding-bottom:14px;">
+    <div class="toggle-row">
+      <div>
+        <div class="section-label" style="margin-bottom:3px;">Convert on this site</div>
+        <div class="toggle-desc" id="currentSiteLabel">—</div>
+      </div>
+      <label class="toggle-switch" id="siteToggleWrap">
+        <input type="checkbox" id="siteToggle" checked>
+        <span class="toggle-thumb"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Detect currencies — grouped by geography -->
+  <div class="section" style="padding-top:12px;">
+    <div class="section-label">Detect currencies</div>
+  </div>
+
+  <div id="groupsContainer"></div>
+
+  <div class="divider"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="rates-status">
+      <div class="rates-dot" id="ratesDot"></div>
+      <span id="ratesLabel">Checking rates…</span>
+    </div>
+    <button class="refresh-btn" id="refreshBtn">Refresh</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
