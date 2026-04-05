@@ -304,10 +304,11 @@ async function saveSettings() {
   settingsDirty = true;
 }
 
-// Reload the active tab when the popup is closed
-window.addEventListener('pagehide', () => {
+// Reload the active tab when the popup is closed (use unload + background message
+// so the reload survives popup context teardown)
+window.addEventListener('unload', () => {
   if (settingsDirty && activeTabId) {
-    chrome.tabs.reload(activeTabId);
+    chrome.runtime.sendMessage({ type: 'reloadTab', tabId: activeTabId });
   }
 });
 

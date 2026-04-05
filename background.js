@@ -61,6 +61,9 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     });
     return true; // keep channel open for async response
   }
+  if (msg.type === 'reloadTab' && msg.tabId) {
+    chrome.tabs.reload(msg.tabId);
+  }
 });
 
 // ── Context menu ───────────────────────────────────────────────────────────

@@ -32,7 +32,7 @@
 
   // ── State ──────────────────────────────────────────────────────────────────
   let settings = {
-    targetCurrency:    'GBP',
+    targetCurrency:    'USD',
     enabledCurrencies: [
       'USD','EUR','JPY','CAD','AUD','CHF','CNY',
       'INR','KRW','VND','SGD','HKD','NZD','THB','MXN','BRL',
