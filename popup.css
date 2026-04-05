@@ -24,12 +24,12 @@
 }
 
 html {
-  width: 360px;
+  width: 420px;
   overflow-x: hidden;
 }
 
 body {
-  width: 360px;
+  width: 420px;
   max-height: 660px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -45,9 +45,16 @@ body {
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   padding: 16px 18px 15px;
   background: linear-gradient(135deg, var(--indigo-600) 0%, #7c3aed 100%);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .header-icon {
@@ -569,15 +576,10 @@ body {
 }
 
 /* ── Ko-fi ────────────────────────────────────────────────────────────────── */
-.kofi-row {
-  padding: 10px 18px 4px;
-  display: flex;
-  justify-content: center;
-}
-
 .kofi-link {
   display: inline-block;
-  opacity: 0.85;
+  flex-shrink: 0;
+  opacity: 0.92;
   transition: opacity 0.15s;
 }
 
@@ -586,7 +588,7 @@ body {
 }
 
 .kofi-img {
-  height: 36px;
+  height: 38px;
   width: auto;
   display: block;
 }

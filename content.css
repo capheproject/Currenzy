@@ -14,21 +14,23 @@
   font: inherit !important;
   color: inherit !important;
   letter-spacing: inherit !important;
-  border-bottom: 1.5px dashed rgba(99, 102, 241, 0.5) !important;
   cursor: default !important;
-  text-decoration: none !important;
+  text-decoration: underline !important;
+  text-decoration-style: dashed !important;
+  text-decoration-color: rgba(99, 102, 241, 0.55) !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 2px !important;
   box-sizing: content-box !important;
-  transition: border-color 0.12s ease !important;
 }
 
 .cc-converted:hover {
-  border-bottom-color: rgba(99, 102, 241, 0.85) !important;
+  text-decoration-color: rgba(99, 102, 241, 0.9) !important;
 }
 
 /* Hover-only mode: show original text, dottier underline to signal "tap for info" */
 .cc-hover-mode .cc-converted {
-  border-bottom-style: dotted !important;
-  border-bottom-color: rgba(99, 102, 241, 0.35) !important;
+  text-decoration-style: dotted !important;
+  text-decoration-color: rgba(99, 102, 241, 0.35) !important;
 }
 
 /* ── Element-level badge (split-DOM fallback: Booking.com etc.) ───────────── */

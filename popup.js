@@ -84,7 +84,7 @@ const ALL_CURRENCIES = CURRENCY_GROUPS.flatMap(g => g.currencies);
 
 // ── Default settings ───────────────────────────────────────────────────────
 const DEFAULT_SETTINGS = {
-  targetCurrency:    'GBP',
+  targetCurrency:    'USD',
   enabledCurrencies: ['USD','EUR','JPY','CAD','AUD','CHF','CNY','INR','KRW','VND','SGD','HKD','NZD','THB','MXN','BRL'],
   dollarDefault:     'USD',
   yenDefault:        'JPY',
