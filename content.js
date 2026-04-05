@@ -48,15 +48,33 @@
   let matcher          = null;
   let freeTextMatcher  = null;
 
+  // Number sub-pattern shared by all regex builders.
+  // Handles grouped separators (1.200,00 / 1,200.00 / 1 200,00),
+  // K/M/B/T letter suffixes, and full word multipliers (million/billion/etc.)
+  const N_PAT = '(?:[0-9]{1,3}(?:[,\\.\\u00A0][0-9]{3})*(?:[,\\.][0-9]{1,4})?|[0-9]+(?:[,\\.][0-9]{1,4})?)(?:[KkMmBbTt]|\\s*(?:million|billion|trillion|thousand))?';
+
   // ── Number parsing ─────────────────────────────────────────────────────────
   function parseAmount(raw) {
     if (!raw) return NaN;
 
-    // Strip K / M / B / T suffixes (e.g. $1.5M, €2K, $500B)
-    const sfxRe = /^([\s\S]+?)([KkMmBbTt])$/;
-    const sfx   = raw.match(sfxRe);
-    const mult  = sfx ? ({ K:1e3, M:1e6, B:1e9, T:1e12 }[sfx[2].toUpperCase()] || 1) : 1;
-    let s = (sfx ? sfx[1] : raw).replace(/[\u00A0\u202F\u2009\s]/g, '').trim();
+    // Strip word multipliers first (e.g. "174.5 million", "2 billion")
+    const wordSfxRe = /\s*(million|billion|trillion|thousand)\s*$/i;
+    const wordSfxM  = raw.match(wordSfxRe);
+    let mult = 1;
+    if (wordSfxM) {
+      const w = wordSfxM[1].toLowerCase();
+      mult = w === 'million' ? 1e6 : w === 'billion' ? 1e9 : w === 'trillion' ? 1e12 : 1e3;
+      raw = raw.replace(wordSfxRe, '').trim();
+    } else {
+      // Strip K / M / B / T suffixes (e.g. $1.5M, €2K, $500B)
+      const sfxRe = /^([\s\S]+?)([KkMmBbTt])$/;
+      const sfx   = raw.match(sfxRe);
+      if (sfx) {
+        mult = { K:1e3, M:1e6, B:1e9, T:1e12 }[sfx[2].toUpperCase()] || 1;
+        raw  = sfx[1];
+      }
+    }
+    let s = raw.replace(/[\u00A0\u202F\u2009\s]/g, '').trim();
     if (!s) return NaN;
 
     const commas = (s.match(/,/g) || []).length;
@@ -153,8 +171,7 @@
       .map(escapeRe);
     const codes = [...enabled].sort((a, b) => b.length - a.length);
 
-    // Number sub-pattern: handles all separator formats + K/M/B/T suffix
-    const N = '(?:[0-9]{1,3}(?:[,\\.\\u00A0][0-9]{3})*(?:[,\\.][0-9]{1,4})?|[0-9]+(?:[,\\.][0-9]{1,4})?)[KkMmBbTt]?';
+    const N = N_PAT;
 
     const symPat  = escapedSyms.length ? `(${escapedSyms.join('|')})` : null;
     const codePat = codes.length       ? `(${codes.join('|')})`       : null;
@@ -274,7 +291,7 @@
 
     const phraseMap = new Map(pairs.map(p => [p.phrase, p.code]));
     const phrasePat = pairs.map(p => escapeRe(p.phrase)).join('|');
-    const N = '(?:[0-9]{1,3}(?:[,\\.\\u00A0][0-9]{3})*(?:[,\\.][0-9]{1,4})?|[0-9]+(?:[,\\.][0-9]{1,4})?)[KkMmBbTt]?';
+    const N = N_PAT;
 
     let regex;
     try {
@@ -639,18 +656,24 @@
       showConversionModal({ error: 'Exchange rates not loaded yet. Please try again in a moment.' });
       return;
     }
-    const { regex, resolveMatch } = matcher;
     const cleaned = text.replace(/\s+/g, ' ').trim();
-    regex.lastIndex = 0;
-    const match = regex.exec(cleaned);
 
-    if (!match) {
-      showConversionModal({ error: `No currency detected in:<br><em>"${cleaned.slice(0, 80)}"</em><br><br>Try selecting text that includes the currency symbol, e.g. <em>$1,200</em> or <em>USD 1,200</em>.` });
-      return;
+    // Try symbol/code matcher first, then fall back to free-text (e.g. "2,7 euro")
+    const candidates = [matcher];
+    const ftm = freeTextMatcher || buildFreeTextMatcher(settings.enabledCurrencies);
+    if (ftm) candidates.push(ftm);
+
+    let match = null, resolved = null, usedMatcher = null;
+    for (const m of candidates) {
+      m.regex.lastIndex = 0;
+      const candidate = m.regex.exec(cleaned);
+      if (!candidate) continue;
+      const res = m.resolveMatch(candidate);
+      if (res?.currencyCode) { match = candidate; resolved = res; usedMatcher = m; break; }
     }
-    const resolved = resolveMatch(match);
-    if (!resolved?.currencyCode) {
-      showConversionModal({ error: 'Currency code not recognised.' });
+
+    if (!match || !resolved) {
+      showConversionModal({ error: `No currency detected in:<br><em>"${cleaned.slice(0, 80)}"</em><br><br>Try selecting text that includes the currency symbol, e.g. <em>$1,200</em> or <em>USD 1,200</em>.` });
       return;
     }
     const amount = parseAmount(resolved.amountStr);

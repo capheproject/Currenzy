@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Currenzy",
+  "name": "Currenzy. Automatic currency conversion. Elegant, simple, always free",
+  "short_name": "Currenzy",
   "version": "2.2.1",
   "description": "Inline currency conversion on any webpage — beautifully.",
   "permissions": ["storage", "alarms", "tabs", "contextMenus"],

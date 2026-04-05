@@ -43,7 +43,10 @@ chrome.runtime.onInstalled.addListener(() => {
   ensureFreshRates();
   registerContextMenu();
 });
-chrome.runtime.onStartup.addListener(ensureFreshRates);
+chrome.runtime.onStartup.addListener(() => {
+  ensureFreshRates();
+  registerContextMenu();
+});
 
 // Refresh daily via alarm
 chrome.alarms.create('refreshRates', { periodInMinutes: 24 * 60 });
